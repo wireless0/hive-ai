@@ -8,11 +8,13 @@ __email__ = "wdchromium@gmail.com"
 
 from enum import Enum
 
+
 class Ply(object):
     def __init__(self, rule, tile):
         self.rule = rule
         self.tile = tile
-        
+
+
 class Placement(Ply):
     def __init__(self, tile, dest):
         super().__init__(Rule.Place, tile)
@@ -22,6 +24,7 @@ class Placement(Ply):
         return 'Placing {0} {1} at {2}'.format(self.tile.color.name,
                                                self.tile.insect.name,
                                                self.dest) 
+
 
 class Movement(Ply):
     def __init__(self, origin, dest, leech_from=None):
@@ -40,6 +43,7 @@ class Movement(Ply):
             retval += ' leeching power from {0}'.format(self.leech_from)
         
         return retval
+
 
 class Relocation(Ply):
     def __init__(self, origin, dest, actor_loc, leech_from=None):
@@ -61,6 +65,7 @@ class Relocation(Ply):
             retval += ' leeching power from {0}'.format(self.leech_from)
         
         return retval
+
 
 class Tile(object):
     def __init__(self, color, insect):
@@ -84,6 +89,7 @@ class Tile(object):
     def insect(self):
         return self._insect
 
+
 class Insect(Enum):
     Queen = 'Q'
     Ant = 'A'
@@ -93,34 +99,39 @@ class Insect(Enum):
     Mosquito = 'M'
     Ladybug = 'L'
     Pillbug = 'P'
-    
+
+
 class Color(Enum):
     White = 'w'
     Black = 'b'
-    
+
+
 class Pointed_Directions(Enum):
-    NE = (1,-1)
-    E = (1,0)
-    SE = (0,1)
-    SW = (-1,1)
-    W = (-1,0)
-    NW = (0,-1)
-    
+    NE = (1, -1)
+    E = (1, 0)
+    SE = (0, 1)
+    SW = (-1, 1)
+    W = (-1, 0)
+    NW = (0, -1)
+
+
 class Flat_Directions(Enum):
-    N = (0,-1)
-    NE = (1,-1)
-    SE = (1,0)
-    S = (0,1)
-    SW = (-1,1)
-    NW = (-1,0)
-    
+    N = (0, -1)
+    NE = (1, -1)
+    SE = (1, 0)
+    S = (0, 1)
+    SW = (-1, 1)
+    NW = (-1, 0)
+
+
 class Rule(Enum):
     Place = 0
     Move = 1
     Relocate = 2
     Leech_Move = 3
     Leech_Relocate = 4
-    
+
+
 class Violation(Enum):
     Queen_Bee_Opening_Prohibited = 'Current rules disallow Queen Bee opening'
     Queen_Bee_Must_Be_Played = 'Queen Bee must be placed by turn 4'
@@ -139,6 +150,7 @@ class Violation(Enum):
     Unavailable_Action = 'The active tile does not have access to this action'
     May_Not_Place_On_Other_Pieces = 'Pieces may not initially be placed on other pieces'
     Cannot_Jump_Gaps = 'Pieces may not temporarily be separated from the hive'
+
 
 class HiveBoard(object):
     BLOCKING = {
@@ -181,10 +193,10 @@ class HiveBoard(object):
     def quick_setup(self, arrangement):
         """Provides an intuitive way to lay out tiles"""
         for coord, piece in arrangement.items():
-            c = next(k for k in Color if k.value==piece[0])
-            i = next(k for k in Insect if k.value==piece[1])
+            c = next(k for k in Color if k.value == piece[0])
+            i = next(k for k in Insect if k.value == piece[1])
             
-            self.place(Tile(c,i), coord)
+            self.place(Tile(c, i), coord)
         
     def move(self, origin, dest):
         """
@@ -232,7 +244,7 @@ class HiveBoard(object):
         
         try:
             ply = self.validate(ply)
-            assert(ply)
+            assert ply
         except IllegalMove:
             raise
         else:
@@ -260,7 +272,7 @@ class HiveBoard(object):
             return False
             
         def placed_adjacent_to_opponent(color):
-            """Checks if tile is ilegally placed next to opponent"""
+            """Checks if tile is illegally placed next to opponent"""
             for c,t in self.neighbors(ply.dest):
                 if t and t.color is not color:
                     return True
@@ -332,8 +344,8 @@ class HiveBoard(object):
                 if len(self.stack_at(ply.origin)) <= 1:
                     origin_will_be_vacated = True
             
-            if not any(t for c,t in neighbors.items()) and \
-                origin_will_be_vacated:
+            if not any(t for c, t in neighbors.items()) and \
+               origin_will_be_vacated:
                 raise IllegalMove(Violation.One_Hive_Rule)      
                 
         def freedom_of_movement(path):
@@ -406,9 +418,9 @@ class HiveBoard(object):
             if self.piece_at(start).insect not in {Insect.Beetle, Insect.Queen}:
                 return
             elif end in self._pieces:
-                return #if climbing, not jumping gap
+                return  # if climbing, not jumping gap
             elif len(self.stack_at(start)) > 1:
-                return #if climbing down, gap irrelevant
+                return  # if climbing down, gap irrelevant
                 
             direction = self.get_direction(start, end, self.tile_orientation)            
             helpers = self.BLOCKING['FLAT'] if self.tile_orientation == Flat_Directions else self.BLOCKING['POINTED']
@@ -500,7 +512,7 @@ class HiveBoard(object):
             
             if ply.dest in set(self.valid_moves(ply.origin, self.piece_at(ply.leech_from).insect)):
                 return ply
-            #else:
+            # else:
             #    raise IllegalMove(Violation.Unavailable_Action)
         else:
             raise RuntimeError
@@ -568,9 +580,9 @@ class HiveBoard(object):
             but does not ever revisit a hex.
             """
             checked = set()
-            s1 = set() #1 tile out
-            s2 = set() #2 tiles out
-            s3 = set() #3 tiles out
+            s1 = set()  # 1 tile out
+            s2 = set()  # 2 tiles out
+            s3 = set()  # 3 tiles out
 
             for c,t in self.neighbors(coords):
                 if not t and adjacent_to_something(coords, c):
@@ -597,12 +609,12 @@ class HiveBoard(object):
             is climbing down to the base level.
             """
             checked = set()
-            s1 = set() #1 tile out
-            s2 = set() #2 tiles out
-            s3 = set() #3 tiles out
+            s1 = set()  # 1 tile out
+            s2 = set()  # 2 tiles out
+            s3 = set()  # 3 tiles out
             
             checked.add(coords) 
-            #add initial space because it cannot be crawled back upon
+            # add initial space because it cannot be crawled back upon
             
             for c,t in self.neighbors(coords):
                 if t:
@@ -689,13 +701,13 @@ class HiveBoard(object):
         frontier = Queue()
         frontier.put(origin)
         
-        came_from = {}
+        came_from = dict()
         came_from[origin] = None
         
         limit = ((self.radius + 1)*2) * 6
-        #includes radius, plus one padding for the boundaries
-        #multiplies by two, for the diameter
-        #multiplied by six, for how many new hexagons introduced per radius
+        # includes radius, plus one padding for the boundaries
+        # multiplies by two, for the diameter
+        # multiplied by six, for how many new hexagons introduced per radius
         counter = 0
         
         insect = self.piece_at(origin).insect
@@ -713,7 +725,7 @@ class HiveBoard(object):
                 if n not in came_from:
                     if insect in {Insect.Spider, Insect.Ant, Insect.Queen, Insect.Pillbug}:                        
                         if n not in self._pieces and \
-                            not freedom_of_movement_violated(current, n):
+                           not freedom_of_movement_violated(current, n):
                             frontier.put(n)
                             came_from[n] = current
                     elif insect is Insect.Beetle:
@@ -786,7 +798,7 @@ class HiveBoard(object):
         else:
             all_pieces = self._pieces.keys()
         
-        start = next(iter(all_pieces)) #choosing a random start point
+        start = next(iter(all_pieces), ()) # choosing a random start point
         frontier.put(start)
         checked.add(start)
         
@@ -910,7 +922,7 @@ class HiveBoard(object):
         
         http://www.redblobgames.com/grids/hexagons/#distances
         """
-        return (abs(origin[0] - dest[0]) + abs(origin[1] - dest[1]) + \
+        return (abs(origin[0] - dest[0]) + abs(origin[1] - dest[1]) +
                 abs(origin[0] + origin[1] - dest[0] - dest[1])) / 2
     
     @property

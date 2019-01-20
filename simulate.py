@@ -8,14 +8,18 @@ __email__ = "wdchromium@gmail.com"
 
 import itertools
 import random
+import time
+import os
 from hive import *
 from ai import GamePieces
 from collections import deque
+
 
 opponent = {
     Color.White: Color.Black,
     Color.Black: Color.White
 }
+
 
 def random_game():
     board = HiveBoard(queen_opening_allowed=True)
@@ -60,28 +64,29 @@ def random_game():
                 if p.color == player_color:
                     vm_set = list(board.valid_moves(actor_coord))
                     random.shuffle(vm_set)
-                    #print(board)
-                    #print(p, '@', actor_coord, 'considering', vm_set)
-                    #print(board._pieces[actor_coord])
+                    # print(board)
+                    # print(p, '@', actor_coord, 'considering', vm_set)
+                    # print(board._pieces[actor_coord])
 
                     for considered_move in vm_set:
                         try:
                             considered_ply = Movement(actor_coord, considered_move)
                             board.perform(considered_ply)
                         except IllegalMove as e:
-                            #print(e, board._pieces[actor_coord])
+                            # print(e, board._pieces[actor_coord])
                             continue
                         else:
                             print('%s %s' % (str(p).ljust(20), considered_ply))
                             move_made = True
-                            #player_color = next(cycler)
+                            # player_color = next(cycler)
                             break
 
             player_color = next(cycler)
 
-    print('ended')    
+    print('ended')
     print(board)
-    
+
+
 def naive_ai():
     board = HiveBoard(queen_opening_allowed=True)
     
@@ -101,6 +106,8 @@ def naive_ai():
         ply = None
         print('turn', player_color)
         print(board)
+        time.sleep(1)
+        os.system("clear")
         for c, t in board.neighbors(opposing_queen):
             if not t:
                 for candidate in board.free_pieces(player_color):
@@ -130,9 +137,9 @@ def naive_ai():
                 grabbed = gp.grab_random(player_color)
             except IndexError:
                 moved_recently.clear()
-                #player_color = next(cycler)
-                #happens if it seems nothing can fill
-                #the last remaining adjacent tile
+                # player_color = next(cycler)
+                # happens if it seems nothing can fill
+                # the last remaining adjacent tile
                 print('bah')
                 
                 for candidate in board.free_pieces(player_color):
@@ -151,7 +158,7 @@ def naive_ai():
                     try:
                         board.perform(ply)
                     except IllegalMove:
-                        #why would this happen?
+                        # why would this happen?
                         pass
                     finally:
                         player_color = next(cycler)
@@ -166,6 +173,7 @@ def naive_ai():
     print(board)
     print('winner', board.winner)
 
+
 if __name__ == '__main__':
-    #random_game()
+    # random_game()
     naive_ai()

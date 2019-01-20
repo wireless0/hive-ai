@@ -8,6 +8,7 @@ __email__ = "wdchromium@gmail.com"
 
 from hive import Insect, Tile, Color
 
+
 class GamePieces(object):
     QUANTITIES = {
         Insect.Queen: 1,
@@ -34,6 +35,7 @@ class GamePieces(object):
         
         friendly = choice([p for p in self._pieces if p.color == color])
         return self._pieces.pop(self._pieces.index(friendly))
+
 
 class HiveAI(object):
     OPPONENT = {

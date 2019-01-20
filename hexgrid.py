@@ -6,6 +6,7 @@ __license__ = "Simplified BSD License"
 __version__ = "0.0.1"
 __email__ = "wdchromium@gmail.com"
 
+
 class HexGrid(object):
     CENTER_ROW = 12
     CENTER_COL = 35
@@ -68,7 +69,8 @@ class HexGrid(object):
         self.grid[list_row] = self.grid[list_row][0:col_row-1] \
                                      + note \
                                      + self.grid[list_row][col_row + 1:]
-        
+
+
 if __name__ == '__main__':
     example = HexGrid()
     example.annotate( (-4,0), 'wB' )
@@ -86,5 +88,5 @@ if __name__ == '__main__':
     example.annotate( (2,1), 'bQ' )
     example.annotate( (3,1), 'bA' )
     example.annotate( (4,1), 'bA' )
-    
+
     print(example)
